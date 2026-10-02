@@ -1,0 +1,98 @@
+name: Submit agama-openapi to OBS
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - '[0-9]*'
+    tags:
+      - 'v*'
+
+  workflow_dispatch:
+
+env:
+  obs_project: ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+  package_name: agama-openapi
+  service_file: package/_service
+
+jobs:
+  update_obs_package:
+    # Do not run in forks which do not set OBS_PROJECTS and OBS_USER variables,
+    # or if mapping for the current branch is missing
+    if: vars.OBS_PROJECTS && fromJson(vars.OBS_PROJECTS)[github.ref_name] && vars.OBS_USER
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+      - name: Configure and refresh repositories
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+      - name: Install tools
+        run: zypper --non-interactive install --no-recommends
+             git
+             cpio
+             obs-service-download_files
+             obs-service-format_spec_file
+             obs-service-obs_scm
+             obs-service-set_version
+             obs-service-tar
+             osc
+
+      - name: Git Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Configure osc
+        run: .github/workflows/configure_osc.sh
+        env:
+          OBS_USER: ${{ vars.OBS_USER }}
+          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
+
+      - name: Checkout package from OBS
+        run: osc co ${{ env.obs_project }} ${{ env.package_name }}
+
+      - name: Configure git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Update service revision
+        run: |
+          echo "Updating revision to \"${{ github.ref_name }}\""
+          BEG='<param name="revision">'
+          END='</param>'
+          sed -i -e "s#${BEG}.*${END}#${BEG}${{ github.ref_name }}${END}#" ${{ env.service_file }}
+
+      - name: Copy service file to OBS package directory
+        run: |
+          OUT_SERVICE=./${{ env.obs_project }}/${{ env.package_name }}/_service
+          BEG='<param name="url">'
+          END='</param>'
+          SED_EXPR="s#${BEG}.*${END}#${BEG}https://github.com/${{ github.repository }}.git${END}#"
+          sed -e "${SED_EXPR}" ${{ env.service_file }} > $OUT_SERVICE
+          BEG='<param name="versionformat">'
+          if [ -z "$(git tag -l)" ]; then sed -i -e "s#${BEG}.*${END}##" $OUT_SERVICE; fi
+
+      - name: Run services
+        run: |
+          osc service manualrun
+          rm -vf *.tgz
+        working-directory: ./${{ env.obs_project }}/${{ env.package_name }}
+
+      - name: Check status
+        run: osc addremove && osc diff && osc status
+        working-directory: ./${{ env.obs_project }}/${{ env.package_name }}
+
+      - name: Commit package to OBS
+        run: |
+          VERSION="$(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama-openapi.obsinfo)"
+          COMMIT="$(sed  -e '/^commit:/!d'  -e 's/commit: *\(.*\)/\1/'  agama-openapi.obsinfo)"
+          osc commit -m "Updated to ${VERSION} (${COMMIT})"
+        working-directory: ./${{ env.obs_project }}/${{ env.package_name }}

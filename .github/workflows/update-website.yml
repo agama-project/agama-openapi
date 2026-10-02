@@ -51,44 +51,19 @@ jobs:
             cp -a agama-openapi/nightly/* website/static/openapi/nightly/
           fi
 
-          # Sync versioned release specifications (e.g., 16.1) and ensure doc page exists
+          # Sync versioned release specifications (e.g., 16.1)
           for dir in agama-openapi/[0-9]*; do
             if [ -d "$dir" ]; then
               version=$(basename "$dir")
               mkdir -p "website/static/openapi/$version"
               cp -a "$dir"/* "website/static/openapi/$version/"
-
-              doc_page="website/docs/user/reference/openapi/${version}.mdx"
-              if [ ! -f "$doc_page" ]; then
-                echo "Generating doc page for version $version..."
-                cat <<EOF > "$doc_page"
----
-title: ${version}
-sidebar_position: 10
-hide_table_of_contents: true
----
-
-import SwaggerViewer from '@site/src/components/SwaggerViewer';
-
-# Version ${version} HTTP API Reference
-
-Interactive OpenAPI documentation for the Agama installer (${version} release).
-
-:::info
-Downloads: [openapi.json](/openapi/${version}/openapi.json) | [openapi.yaml](/openapi/${version}/openapi.yaml)
-:::
-
-<SwaggerViewer specUrl="/openapi/${version}/openapi.json" />
-EOF
-              fi
             fi
           done
 
       - name: Check for changes in website repository
         id: check_changes
         run: |
-          cd website
-          if [ -n "$(git status --porcelain)" ]; then
+          if [ -n "$(git -C website status --porcelain static/openapi)" ]; then
             echo "changes=true" >> $GITHUB_OUTPUT
           else
             echo "changes=false" >> $GITHUB_OUTPUT
@@ -99,6 +74,6 @@ EOF
         if: steps.check_changes.outputs.changes == 'true'
         run: |
           cd website
-          git add static/openapi docs/user/reference/openapi
+          git add static/openapi
           git commit -m "Update OpenAPI specifications from agama-openapi"$'\n\n'"agama-openapi commit: ${{ github.sha }}"
           git push

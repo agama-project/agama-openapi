@@ -1,0 +1,20 @@
+<services>
+  <service name="obs_scm" mode="manual">
+    <!-- the URL is modified by the GitHub Actions workflow when submitting to OBS -->
+    <param name="url">https://github.com/openSUSE/agama-openapi.git</param>
+    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@.%h</param>
+    <param name="versionrewrite-pattern">v(.*)</param>
+    <param name="scm">git</param>
+    <param name="revision">main</param>
+    <param name="without-version">enable</param>
+    <param name="extract">package/agama-openapi.changes</param>
+    <param name="extract">package/agama-openapi.spec</param>
+  </service>
+  <service mode="buildtime" name="tar">
+    <param name="obsinfo">agama-openapi.obsinfo</param>
+    <param name="filename">agama-openapi</param>
+  </service>
+  <service mode="buildtime" name="set_version">
+    <param name="basename">agama-openapi</param>
+  </service>
+</services>
