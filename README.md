@@ -2,6 +2,10 @@
 
 This repository hosts versioned OpenAPI specifications and JSON schemas for the [Agama installer](https://github.com/openSUSE/agama).
 
+> **Important:** All specifications and schemas in this repository are **automatically generated** from the main Agama codebase.
+>
+> This repository is a distribution mirror and does not accept direct contributions. All changes, bug fixes, or improvements to the OpenAPI definitions, JSON schemas, or documentation must be made upstream in the main [Agama repository](https://github.com/openSUSE/agama).
+
 ## Directory Structure
 
 Specifications and schemas are organized by version or release branch:
