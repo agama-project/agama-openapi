@@ -6,18 +6,18 @@ set -eu
 # DESTDIR=%{buildroot}
 # datadir=%{_datadir}
 
-if [ "${1-}" = --system ]; then
-    SRCDIR=.
-    DESTDIR=""
-    datadir=/usr/share
-fi
+: "${SRCDIR:=.}"
+: "${DESTDIR:=}"
+: "${datadir:=/usr/share}"
 
 mkdir -p "${DESTDIR}${datadir}/agama/openapi"
 
-if [ -d "${SRCDIR}/16.1" ]; then
-    cp -a "${SRCDIR}/16.1" "${DESTDIR}${datadir}/agama/openapi/"
-fi
+for dir in "${SRCDIR}"/[0-9]*; do
+    if [ -d "$dir" ]; then
+        cp -va "$dir" "${DESTDIR}${datadir}/agama/openapi/"
+    fi
+done
 
 if [ -d "${SRCDIR}/nightly" ]; then
-    cp -a "${SRCDIR}/nightly" "${DESTDIR}${datadir}/agama/openapi/"
+    cp -va "${SRCDIR}/nightly" "${DESTDIR}${datadir}/agama/openapi/"
 fi

@@ -21,9 +21,9 @@ Version:        0
 Release:        0
 Summary:        OpenAPI specifications and JSON schemas for the Agama installer
 License:        GPL-2.0-only
-URL:            https://github.com/openSUSE/agama-openapi
+URL:            https://github.com/agama-project/agama-openapi
 BuildArch:      noarch
-Source0:        %{name}-%{version}.tar
+Source0:        %{name}.tar
 
 %description
 OpenAPI specifications and JSON schemas for the Agama installer.
@@ -37,7 +37,7 @@ Nightly OpenAPI specifications and JSON schemas for the Agama installer, generat
 from the latest master branch.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}
 
 %build
 

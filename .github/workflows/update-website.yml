@@ -47,10 +47,12 @@ jobs:
 
           # Sync nightly specifications and standalone schemas
           if [ -d "agama-openapi/nightly" ]; then
+            rm -rfv website/static/openapi/nightly
             mkdir -p website/static/openapi/nightly
             cp -a agama-openapi/nightly/* website/static/openapi/nightly/
           fi
 
+          # Here it expects that old schema never disappear. If so, then it needs manual removal.
           # Sync versioned release specifications (e.g., 16.1)
           for dir in agama-openapi/[0-9]*; do
             if [ -d "$dir" ]; then
@@ -76,4 +78,4 @@ jobs:
           cd website
           git add static/openapi
           git commit -m "Update OpenAPI specifications from agama-openapi"$'\n\n'"agama-openapi commit: ${{ github.sha }}"
-          git push
+          git push origin HEAD:main

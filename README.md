@@ -32,7 +32,7 @@ You can reference the JSON Schema directly in your Agama profile (JSON or YAML) 
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/openSUSE/agama-openapi/master/nightly/schemas/config.schema.json",
+  "$schema": "https://agama-project.github.io/openapi/nightly/schemas/config.schema.json",
   "product": {
     "id": "Tumbleweed"
   }
