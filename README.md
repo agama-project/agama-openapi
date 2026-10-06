@@ -18,7 +18,7 @@ Specifications and schemas are organized by version or release branch:
 Each version directory contains:
 
 * **`openapi.json` / `openapi.yaml`**: The primary OpenAPI 3.1 specification, referencing extracted standalone schemas in `schemas/`.
-* **`openapi_full.json` / `openapi_full.yaml`**: Fully resolved, monolithic OpenAPI 3.1 specification containing all component schemas inline with no external file references.
+* **`openapi-full.json` / `openapi-full.yaml`**: Fully resolved, monolithic OpenAPI 3.1 specification containing all component schemas inline with no external file references.
 * **`schemas/`**: Standalone JSON schemas (Draft 2019-09) extracted for validation targets:
   * **`config.schema.json`**: Schema for Agama autoinstallation profiles.
   * **`proposal.schema.json`**: Schema for installation proposals.
@@ -45,5 +45,5 @@ You can validate the OpenAPI specifications using tools such as `openapi-spec-va
 
 ```sh
 openapi-spec-validator nightly/openapi.json
-openapi-spec-validator nightly/openapi_full.json
+openapi-spec-validator nightly/openapi-full.json
 ```
