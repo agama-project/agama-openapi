@@ -7,23 +7,21 @@ on:
   push:
     branches:
       - main
-      - master
-      - '[0-9]*'
-    tags:
-      - 'v*'
+    # Submit only when stable schema changes
+    paths:
+      - '[0-9]*/**'
 
   workflow_dispatch:
 
 env:
-  obs_project: ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+  obs_project: vars.OBS_PROJECT
   package_name: agama-openapi
   service_file: package/_service
 
 jobs:
   update_obs_package:
-    # Do not run in forks which do not set OBS_PROJECTS and OBS_USER variables,
-    # or if mapping for the current branch is missing
-    if: vars.OBS_PROJECTS && fromJson(vars.OBS_PROJECTS)[github.ref_name] && vars.OBS_USER
+    # Do not run in forks
+    if: ${{ !github.event.repository.fork }}
 
     runs-on: ubuntu-latest
 
@@ -58,27 +56,10 @@ jobs:
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
       - name: Checkout package from OBS
-        run: osc co ${{ env.obs_project }} ${{ env.package_name }}
+        run: osc co ${{ vars.OBS_PROJECT }} ${{ env.package_name }}
 
       - name: Configure git
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-      - name: Update service revision
-        run: |
-          echo "Updating revision to \"${{ github.ref_name }}\""
-          BEG='<param name="revision">'
-          END='</param>'
-          sed -i -e "s#${BEG}.*${END}#${BEG}${{ github.ref_name }}${END}#" ${{ env.service_file }}
-
-      - name: Copy service file to OBS package directory
-        run: |
-          OUT_SERVICE=./${{ env.obs_project }}/${{ env.package_name }}/_service
-          BEG='<param name="url">'
-          END='</param>'
-          SED_EXPR="s#${BEG}.*${END}#${BEG}https://github.com/${{ github.repository }}.git${END}#"
-          sed -e "${SED_EXPR}" ${{ env.service_file }} > $OUT_SERVICE
-          BEG='<param name="versionformat">'
-          if [ -z "$(git tag -l)" ]; then sed -i -e "s#${BEG}.*${END}##" $OUT_SERVICE; fi
 
       - name: Run services
         run: |

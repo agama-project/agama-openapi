@@ -18,11 +18,18 @@ Specifications and schemas are organized by version or release branch:
 Each version directory contains:
 
 * **`openapi.json` / `openapi.yaml`**: The primary OpenAPI 3.1 specification, referencing extracted standalone schemas in `schemas/`.
-* **`openapi-full.json` / `openapi-full.yaml`**: Fully resolved, monolithic OpenAPI 3.1 specification containing all component schemas inline with no external file references.
+* **`openapi_full.json` / `openapi_full.yaml`**: Fully resolved, monolithic OpenAPI 3.1 specification containing all component schemas inline with no external file references.
 * **`schemas/`**: Standalone JSON schemas (Draft 2019-09) extracted for validation targets:
   * **`config.schema.json`**: Schema for Agama autoinstallation profiles.
   * **`proposal.schema.json`**: Schema for installation proposals.
   * **`system.schema.json`**: Schema for system information.
+
+## RPM Packages
+
+* **`agama-openapi`** (built from this repository):
+  Provides OpenAPI specifications and schemas for **stable releases** (e.g. `16.1`). Files are installed under `/usr/share/agama/openapi/<version>/`.
+* **`agama-openapi-nightly`** (built from the main [Agama repository](https://github.com/openSUSE/agama)):
+  Provides nightly OpenAPI specifications and schemas generated during Agama development builds. Files are installed under `/usr/share/agama/openapi/nightly/`.
 
 ## Using the Schemas
 

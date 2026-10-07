@@ -29,13 +29,6 @@ Source0:        %{name}.tar
 OpenAPI specifications and JSON schemas for the Agama installer.
 This package contains stable release specifications.
 
-%package nightly
-Summary:        Nightly OpenAPI specifications and JSON schemas for the Agama installer
-
-%description nightly
-Nightly OpenAPI specifications and JSON schemas for the Agama installer, generated
-from the latest master branch.
-
 %prep
 %autosetup -p1 -n %{name}
 
@@ -54,12 +47,5 @@ env \
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/openapi
 %{_datadir}/agama/openapi/16.1
-
-%files nightly
-%doc README.md
-%license LICENSE
-%dir %{_datadir}/agama
-%dir %{_datadir}/agama/openapi
-%{_datadir}/agama/openapi/nightly
 
 %changelog

@@ -17,7 +17,3 @@ for dir in "${SRCDIR}"/[0-9]*; do
         cp -va "$dir" "${DESTDIR}${datadir}/agama/openapi/"
     fi
 done
-
-if [ -d "${SRCDIR}/nightly" ]; then
-    cp -va "${SRCDIR}/nightly" "${DESTDIR}${datadir}/agama/openapi/"
-fi

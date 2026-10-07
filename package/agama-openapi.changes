@@ -1,8 +1,5 @@
 -------------------------------------------------------------------
 Thu Oct  1 15:30:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
-- Initial package containing OpenAPI specifications and JSON schemas
-  for Agama:
-  - Base package provides stable 16.1 OpenAPI specifications
-  - Subpackage agama-openapi-nightly provides nightly OpenAPI
-    specifications and standalone JSON schemas
+- Initial package containing stable OpenAPI specifications and JSON
+  schemas for Agama (16.1).
