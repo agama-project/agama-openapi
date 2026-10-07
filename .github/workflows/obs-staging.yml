@@ -14,7 +14,6 @@ on:
   workflow_dispatch:
 
 env:
-  obs_project: vars.OBS_PROJECT
   package_name: agama-openapi
   service_file: package/_service
 
@@ -65,15 +64,15 @@ jobs:
         run: |
           osc service manualrun
           rm -vf *.tgz
-        working-directory: ./${{ env.obs_project }}/${{ env.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ env.package_name }}
 
       - name: Check status
         run: osc addremove && osc diff && osc status
-        working-directory: ./${{ env.obs_project }}/${{ env.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ env.package_name }}
 
       - name: Commit package to OBS
         run: |
           VERSION="$(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama-openapi.obsinfo)"
           COMMIT="$(sed  -e '/^commit:/!d'  -e 's/commit: *\(.*\)/\1/'  agama-openapi.obsinfo)"
           osc commit -m "Updated to ${VERSION} (${COMMIT})"
-        working-directory: ./${{ env.obs_project }}/${{ env.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ env.package_name }}
